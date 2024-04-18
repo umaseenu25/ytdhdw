@@ -120,10 +120,15 @@ def create_tables(db_cursor):
 
 # Function to store data in SQL database
 def store_data_in_database(data, db_cursor):
-    channel_sql = "INSERT INTO test.channels (channel_name, subscriber_count, total_video_count) VALUES (%s, %s, %s)"
-    channel_values = (data["channel_name"], data["subscriber_count"], data["total_video_count"])
-    db_cursor.execute(channel_sql, channel_values)
-    channel_id = db_cursor.lastrowid
+    try:
+        channel_sql = "INSERT INTO test.channels (channel_name, subscriber_count, total_video_count) VALUES (%s, %s, %s)"
+        channel_values = (data["channel_name"], data["subscriber_count"], data["total_video_count"])
+        db_cursor.execute(channel_sql, channel_values)
+        channel_id = db_cursor.lastrowid
+        st.success("Data stored successfully!")
+    except mysql.connector.Error as err:
+        st.error(f"Error storing data in database: {err}")
+
 
     for playlist_data in data["playlists"]:
         playlist_sql = "INSERT INTO test.playlists (channel_id, playlist_id, playlist_name) VALUES (%s, %s, %s)"
@@ -261,7 +266,8 @@ if st.button("Fetch and Store Data"):
     conn = connect_to_database()
     cursor = conn.cursor()
     youtube_data = fetch_youtube_data(api_key, channel_id)
-    store_data_in_database(youtube_data, cursor)
+    if youtube_data:
+        store_data_in_database(youtube_data, cursor)
     conn.commit()
 
 # Fetch and Store Data Section
