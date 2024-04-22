@@ -167,7 +167,7 @@ def execute_query(query, db_cursor):
         return None
     
 # Streamlit UI
-st.title("YouTube Channel Analytics")
+st.title(":red[YouTube Channel Analytics]")
 
 st.subheader("Query Section")
 
